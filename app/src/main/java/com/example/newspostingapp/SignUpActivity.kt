@@ -1,8 +1,10 @@
 package com.example.newspostingapp
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -40,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.database.FirebaseDatabase
 
 class SignUpActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -164,7 +167,41 @@ fun RegisterScreen() {
 
                 // Login Button
                 Button(
-                    onClick = { /* Handle login */ },
+                    onClick = {
+                        when {
+                        fullName.isEmpty() -> {
+//                            Toast.makeText(context, " Please Enter Name", Toast.LENGTH_SHORT).show()
+                        }
+
+                        email.isEmpty() -> {
+//                            Toast.makeText(context, " Please Enter Mail", Toast.LENGTH_SHORT)
+//                                .show()
+                        }
+                        qualification.isEmpty() -> {
+//                            Toast.makeText(context, " Please Enter qualification", Toast.LENGTH_SHORT)
+//                                .show()
+                        }
+                        password.isEmpty() -> {
+//                            Toast.makeText(context, " Please Enter Password", Toast.LENGTH_SHORT)
+//                                .show()
+                        }
+                        confirmPassword.isEmpty() -> {
+//                            Toast.makeText(context, " Please Enter Confirm Password", Toast.LENGTH_SHORT)
+//                                .show()
+                        }
+
+                        else -> {
+                            val posterDetails = PosterDetails(
+                                fullName,
+                                email,
+                                qualification,
+                                password
+                            )
+                            registerUser(posterDetails,context);
+                        }
+
+                    }
+                              },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp)
@@ -199,3 +236,40 @@ fun RegisterScreen() {
         }
     }
 }
+
+
+fun registerUser(posterDetails: PosterDetails, context: Context) {
+
+    val firebaseDatabase = FirebaseDatabase.getInstance()
+    val databaseReference = firebaseDatabase.getReference("PosterDetails")
+
+    databaseReference.child(posterDetails.emailid.replace(".", ","))
+        .setValue(posterDetails)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(context, "You Registered Successfully", Toast.LENGTH_SHORT)
+                    .show()
+
+            } else {
+                Toast.makeText(
+                    context,
+                    "Registration Failed",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+        .addOnFailureListener { _ ->
+            Toast.makeText(
+                context,
+                "Something went wrong",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+}
+
+data class PosterDetails(
+    var name : String = "",
+    var emailid : String = "",
+    var qualification : String = "",
+    var password: String = ""
+)

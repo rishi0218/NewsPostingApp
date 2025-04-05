@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.database.FirebaseDatabase
@@ -206,6 +207,7 @@ fun loginUser(posterDetails: PosterDetails, context: Context) {
             if (donorData != null) {
                 if (donorData.password == posterDetails.password) {
 
+                    context.startActivity(Intent(context, NewsHomeActivity::class.java))
                     Toast.makeText(context, "Login Sucessfully", Toast.LENGTH_SHORT).show()
 
                 } else {

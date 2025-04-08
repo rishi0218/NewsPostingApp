@@ -13,6 +13,9 @@
         android:theme="@style/Theme.NewsPostingApp"
         tools:targetApi="31">
         <activity
+            android:name=".CreatePostActivity"
+            android:exported="false" />
+        <activity
             android:name=".NewsHomeActivity"
             android:exported="false" />
         <activity

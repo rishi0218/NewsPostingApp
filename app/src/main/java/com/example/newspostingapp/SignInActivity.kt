@@ -203,9 +203,13 @@ fun loginUser(posterDetails: PosterDetails, context: Context) {
 
     databaseReference.get().addOnCompleteListener { task ->
         if (task.isSuccessful) {
-            val donorData = task.result?.getValue(PosterDetails::class.java)
-            if (donorData != null) {
-                if (donorData.password == posterDetails.password) {
+            val newsData = task.result?.getValue(PosterDetails::class.java)
+            if (newsData != null) {
+                if (newsData.password == posterDetails.password) {
+
+                    NewsPostingData.writeLS(context, true)
+                    NewsPostingData.writeMail(context, newsData.emailid)
+                    NewsPostingData.writeUserName(context, newsData.name)
 
                     context.startActivity(Intent(context, NewsHomeActivity::class.java))
                     Toast.makeText(context, "Login Sucessfully", Toast.LENGTH_SHORT).show()

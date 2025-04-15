@@ -1,5 +1,7 @@
 package com.example.newspostingapp
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Space
 import androidx.activity.ComponentActivity
@@ -34,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 
 class NewsHomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -273,6 +276,9 @@ fun NewsHomeScreenP() {
 @Composable
 fun NewsHomeScreen() {
 
+    val context = LocalContext.current as Activity
+
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -307,9 +313,11 @@ fun NewsHomeScreen() {
                 .padding(horizontal = 12.dp)
         ) {
 
-
             Column(
                 modifier = Modifier
+                    .clickable {
+                        context.startActivity(Intent(context, CreatePostActivity::class.java))
+                    }
                     .weight(1f)
                     .border(
                         width = 2.dp,
@@ -420,6 +428,10 @@ fun NewsHomeScreen() {
                         color = colorResource(id = R.color.card_c1),
                         shape = RoundedCornerShape(6.dp)
                     )
+                    .clickable {
+                        context.startActivity(Intent(context, PostSummaryActivity::class.java))
+
+                    }
                     .padding(horizontal = 16.dp, vertical = 6.dp)
             ) {
 

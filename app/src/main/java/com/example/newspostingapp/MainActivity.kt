@@ -1,5 +1,6 @@
 package com.example.newspostingapp
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -27,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,6 +50,11 @@ class MainActivity : ComponentActivity() {
 
         when (navigationValue) {
             1 -> {
+                startActivity(Intent(this, NewsHomeActivity::class.java))
+                finish()
+            }
+
+            2->{
                 startActivity(Intent(this, SignInActivity::class.java))
                 finish()
             }
@@ -60,6 +67,9 @@ class MainActivity : ComponentActivity() {
 fun StartUpViewScreen(navigationLogic: (navigationValue: Int) -> Unit) {
     var canSplash by remember { mutableStateOf(true) }
 
+    val context = LocalContext.current as Activity
+
+
     LaunchedEffect(Unit) {
         delay(3000)
         canSplash = false
@@ -68,7 +78,16 @@ fun StartUpViewScreen(navigationLogic: (navigationValue: Int) -> Unit) {
     if (canSplash) {
         StartUpView()
     } else {
-        navigationLogic.invoke(1)
+
+
+        val currentStatus = NewsPostingData.readLS(context)
+
+        if(currentStatus)
+        {
+            navigationLogic.invoke(1)
+        }else{
+            navigationLogic.invoke(2)
+        }
     }
 }
 

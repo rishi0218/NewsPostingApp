@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.database.FirebaseDatabase
+import kotlin.jvm.java
 
 class SignUpActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -170,24 +171,24 @@ fun RegisterScreen() {
                     onClick = {
                         when {
                         fullName.isEmpty() -> {
-//                            Toast.makeText(context, " Please Enter Name", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, " Please Enter Name", Toast.LENGTH_SHORT).show()
                         }
 
                         email.isEmpty() -> {
-//                            Toast.makeText(context, " Please Enter Mail", Toast.LENGTH_SHORT)
-//                                .show()
+                            Toast.makeText(context, " Please Enter Mail", Toast.LENGTH_SHORT)
+                                .show()
                         }
                         qualification.isEmpty() -> {
-//                            Toast.makeText(context, " Please Enter qualification", Toast.LENGTH_SHORT)
-//                                .show()
+                            Toast.makeText(context, " Please Enter qualification", Toast.LENGTH_SHORT)
+                                .show()
                         }
                         password.isEmpty() -> {
-//                            Toast.makeText(context, " Please Enter Password", Toast.LENGTH_SHORT)
-//                                .show()
+                            Toast.makeText(context, " Please Enter Password", Toast.LENGTH_SHORT)
+                                .show()
                         }
                         confirmPassword.isEmpty() -> {
-//                            Toast.makeText(context, " Please Enter Confirm Password", Toast.LENGTH_SHORT)
-//                                .show()
+                            Toast.makeText(context, " Please Enter Confirm Password", Toast.LENGTH_SHORT)
+                                .show()
                         }
 
                         else -> {
@@ -249,6 +250,9 @@ fun registerUser(posterDetails: PosterDetails, context: Context) {
             if (task.isSuccessful) {
                 Toast.makeText(context, "You Registered Successfully", Toast.LENGTH_SHORT)
                     .show()
+
+                context.startActivity(Intent(context, SignInActivity::class.java))
+                (context as Activity).finish()
 
             } else {
                 Toast.makeText(

@@ -368,7 +368,7 @@ fun NewsHomeScreen() {
 
                 Text(
                     modifier = Modifier,
-                    text = "Add Collaborators",
+                    text = "My Posts",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = Color.Black,
@@ -390,6 +390,9 @@ fun NewsHomeScreen() {
 
             Column(
                 modifier = Modifier
+                    .clickable {
+                        context.startActivity(Intent(context, ManagePostsActivity::class.java))
+                    }
                     .weight(1f)
                     .border(
                         width = 2.dp,

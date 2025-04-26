@@ -1,10 +1,13 @@
 package com.example.newspostingapp
 
+import android.R.attr.contentDescription
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,11 +31,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImagePainter.State.Empty.painter
 
 class PostSummaryActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +58,7 @@ data class NewsItem(
 
 @Composable
 fun MyPostedNewsScreen() {
+    val context = LocalContext.current as Activity
     var searchQuery by remember { mutableStateOf("") }
 
     val newsList = remember {
@@ -185,7 +191,10 @@ fun MyPostedNewsScreen() {
 
             Image(
                 modifier = Modifier
-                    .size(36.dp),
+                    .size(36.dp)
+                    .clickable {
+                        context.finish()
+                    },
                 painter = painterResource(id = R.drawable.back_button),
                 contentDescription = "back"
             )

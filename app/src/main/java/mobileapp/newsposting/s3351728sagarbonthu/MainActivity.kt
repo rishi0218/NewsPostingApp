@@ -1,23 +1,24 @@
-package com.example.newspostingapp
+package mobileapp.newsposting.s3351728sagarbonthu
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,10 +33,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.newspostingapp.ui.theme.NewsPostingAppTheme
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -78,11 +77,7 @@ fun StartUpViewScreen(navigationLogic: (navigationValue: Int) -> Unit) {
     if (canSplash) {
         StartUpView()
     } else {
-
-
-        val currentStatus = NewsPostingData.readLS(context)
-
-        if(currentStatus)
+        if(NewsPostPrefs.checkLoginStatus(context))
         {
             navigationLogic.invoke(1)
         }else{
@@ -96,7 +91,8 @@ fun StartUpView() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.Green),
+            .background(color = Color.Green)
+            .padding(WindowInsets.systemBars.asPaddingValues()),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -118,7 +114,7 @@ fun StartUpView() {
                 {
                     Image(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        painter = painterResource(id = R.drawable.news_posting),
+                        painter = painterResource(id = R.drawable.newsposting_ic),
                         contentDescription = "News Posting App",
                     )
 

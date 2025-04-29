@@ -1,4 +1,4 @@
-package com.example.newspostingapp
+package mobileapp.newsposting.s3351728sagarbonthu
 
 import android.app.Activity
 import android.content.Intent
@@ -12,11 +12,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -55,7 +58,7 @@ fun NewsHomeScreen() {
     val context = LocalContext.current as Activity
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize() .padding(WindowInsets.systemBars.asPaddingValues())
     ) {
 
         Row(
@@ -133,7 +136,7 @@ fun NewsHomeScreen() {
                         shape = RoundedCornerShape(6.dp)
                     )
                     .clickable {
-                        context.startActivity(Intent(context, PostSummaryActivity::class.java))
+                        context.startActivity(Intent(context, SearchByAreaActivity::class.java))
 
                     }
                     .padding(horizontal = 16.dp, vertical = 6.dp)
@@ -254,6 +257,9 @@ fun NewsHomeScreen() {
             Column(
                 modifier = Modifier
                     .weight(1f)
+                    .clickable {
+                        context.startActivity(Intent(context, WriterProfileActivity::class.java))
+                    }
                     .border(
                         width = 2.dp,
                         color = colorResource(id = R.color.card_c1),
@@ -286,6 +292,9 @@ fun NewsHomeScreen() {
             Column(
                 modifier = Modifier
                     .weight(1f)
+                    .clickable {
+                        context.startActivity(Intent(context, SupportActivity::class.java))
+                    }
                     .border(
                         width = 2.dp,
                         color = colorResource(id = R.color.card_c1),
@@ -305,7 +314,7 @@ fun NewsHomeScreen() {
 
                 Text(
                     modifier = Modifier,
-                    text = "Logout Account",
+                    text = "Contact Us",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium.copy(
                         color = Color.Black,

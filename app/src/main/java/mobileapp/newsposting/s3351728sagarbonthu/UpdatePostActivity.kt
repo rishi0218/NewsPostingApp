@@ -1,4 +1,4 @@
-package com.example.newspostingapp
+package mobileapp.newsposting.s3351728sagarbonthu
 
 import android.app.Activity
 import android.net.Uri
@@ -14,12 +14,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
@@ -64,19 +69,14 @@ fun UpdatePostScreen(newsData: NewsData) {
     var updatedCategory by remember { mutableStateOf(newsData.newsCategory) }
     var updatedContent by remember { mutableStateOf(newsData.newsContent) }
     var updatedImageUrl by remember { mutableStateOf(newsData.imageUrl) }
-
-    val userEmail = NewsPostingData.readMail(context)
-
+    val userEmail = NewsPostPrefs.getReporterEmail(context)
 
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-    val pickImageLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            selectedImageUri = uri
-        }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState()) .padding(WindowInsets.systemBars.asPaddingValues())
     ) {
 
         Row(
@@ -97,7 +97,7 @@ fun UpdatePostScreen(newsData: NewsData) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = "Update Post",
-                color = Color.White,
+                color = Color.Black,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
@@ -149,12 +149,7 @@ fun UpdatePostScreen(newsData: NewsData) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-//        OutlinedTextField(
-//            value = updatedCategory,
-//            onValueChange = { updatedCategory = it },
-//            label = { Text("Category") },
-//            modifier = Modifier.fillMaxWidth()
-//        )
+
 
             SelectNewsCategoryDD(
                 selectedType = updatedCategory,
@@ -188,7 +183,7 @@ fun UpdatePostScreen(newsData: NewsData) {
                     updatedNews.imageUrl = newsData.imageUrl
 
 
-                    updatePost(updatedNews,userEmail) {
+                    updatePost(updatedNews, userEmail) {
                         Toast.makeText(context, "Post updated successfully!", Toast.LENGTH_SHORT)
                             .show()
                         context.finish()

@@ -1,16 +1,13 @@
-package com.example.newspostingapp
+package mobileapp.newsposting.s3351728sagarbonthu
 
 import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
-import android.util.Base64
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -24,16 +21,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -63,10 +65,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 class CreatePostActivity : ComponentActivity() {
@@ -103,6 +102,8 @@ fun CreatePostScreen() {
 
     var selectedCategory by remember { mutableStateOf("") }
 
+    var isUploading by remember { mutableStateOf(false) }
+
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -119,7 +120,10 @@ fun CreatePostScreen() {
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(WindowInsets.systemBars.asPaddingValues())
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -144,7 +148,7 @@ fun CreatePostScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp),
-                text = "News Posting App",
+                text = "Create Post",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.headlineSmall.copy(
                     color = Color.Black,
@@ -190,14 +194,7 @@ fun CreatePostScreen() {
 
         Spacer(modifier = Modifier.height(4.dp))
 
-//        OutlinedTextField(
-//            value = location,
-//            onValueChange = { location = it },
-//            label = { Text("Location") },
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(horizontal = 12.dp)
-//        )
+
 
         Row(
             modifier = Modifier
@@ -233,7 +230,6 @@ fun CreatePostScreen() {
                 modifier = Modifier
                     .wrapContentHeight()
                     .clickable {
-//                        context.startActivity(Intent(context, PickupLocationActivity::class.java))
 
                         isPuckUpSelected = false
                         val intent = Intent(context, SelectLocationActivity::class.java)
@@ -259,28 +255,43 @@ fun CreatePostScreen() {
 
         Spacer(modifier = Modifier.height(64.dp))
 
-        Button(
-            onClick = {
+        if (!isUploading) {
+            Button(
+                onClick = {
 
-                val newsData = NewsData(
-                    newsTitle = title,
-                    newsCategory = selectedCategory,
-                    newsContent = content,
-                    lat = locLat.toString(),
-                    lng = locLng.toString()
-                )
+                    if (title.isBlank() || selectedCategory.isBlank() || content.isBlank() || locLat == 0.0 || locLng == 0.0) {
+                        Toast.makeText(context, "All Fields  are Mandatory", Toast.LENGTH_SHORT)
+                            .show()
+                    } else {
 
+                        isUploading=true
 
-                uploadNewsWithImage(newsData,NewsPhoto.selImageUri,context)
+                        if (NewsPhoto.isImageSelected) {
+                            val newsData = NewsData(
+                                newsTitle = title,
+                                newsCategory = selectedCategory,
+                                newsContent = content,
+                                lat = locLat.toString(),
+                                lng = locLng.toString()
+                            )
 
-            },
-            modifier = Modifier
-                .padding(horizontal = 12.dp)
-                .height(38.dp)
-                .align(Alignment.CenterHorizontally),
-            colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.main_color))
-        ) {
-            Text(text = "Publish", color = Color.Black)
+                            uploadNewsWithImage(newsData, NewsPhoto.selImageUri, context)
+                        } else {
+                            Toast.makeText(context, "Upload an Image", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                },
+                modifier = Modifier
+                    .padding(horizontal = 12.dp)
+                    .height(38.dp)
+                    .align(Alignment.CenterHorizontally),
+                colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.main_color))
+            ) {
+                Text(text = "Publish", color = Color.Black)
+            }
+        } else {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
         }
 
     }
@@ -293,13 +304,9 @@ fun uploadNewsWithImage(
 ) {
     val storageRef = FirebaseStorage.getInstance().reference
     val databaseRef = FirebaseDatabase.getInstance().reference
-
-    var userName = NewsPostingData.readUserName(context)
-
-    val userEmail = NewsPostingData.readMail(context).replace(".",",")
-
+    val userName = NewsPostPrefs.getReporterName(context)
+    val userEmail = NewsPostPrefs.getReporterEmail(context).replace(".", ",")
     val newsId = databaseRef.child("NewsPosts").push().key ?: return
-
     val imageRef = storageRef.child("NewsPosts/$newsId/news_image.jpg")
     imageRef.putFile(selectedImageUri)
         .continueWithTask { task ->
@@ -309,7 +316,6 @@ fun uploadNewsWithImage(
             imageRef.downloadUrl
         }
         .addOnSuccessListener { downloadUri ->
-            // Image uploaded successfully, now save the news data
             val newsMap = mapOf(
                 "newsId" to newsId,
                 "newsTitle" to newsData.newsTitle,
@@ -326,7 +332,7 @@ fun uploadNewsWithImage(
                 .setValue(newsMap)
                 .addOnSuccessListener {
                     Toast.makeText(context, "Posted News Successfully.", Toast.LENGTH_SHORT).show()
-
+                    (context as Activity).finish()
                 }
                 .addOnFailureListener {
                     Toast.makeText(context, "Failed to save news.", Toast.LENGTH_SHORT).show()
@@ -336,7 +342,6 @@ fun uploadNewsWithImage(
             Toast.makeText(context, "Failed to upload image.", Toast.LENGTH_SHORT).show()
         }
 }
-
 
 
 @Composable
@@ -372,7 +377,9 @@ fun UploadPostImage() {
     )
 
     Column(
-        modifier = Modifier.size(100.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -382,8 +389,10 @@ fun UploadPostImage() {
             } else {
                 painterResource(id = R.drawable.upload_image)
             },
+
             contentDescription = "Captured Image",
             modifier = Modifier
+                .fillMaxSize()
                 .clickable {
                     if (ContextCompat.checkSelfPermission(
                             activityContext,
@@ -426,7 +435,7 @@ data class NewsData(
     var lat: String = "",
     var lng: String = "",
     var imageUrl: String = "",
-    var author:String = ""
+    var author: String = ""
 )
 
 fun getAddressFromLatLng(context: Context, latLng: LatLng): String {
@@ -446,7 +455,7 @@ fun SelectNewsCategoryDD(
     selectedType: String,
     onTypeSelected: (String) -> Unit
 ) {
-    val types = listOf("Politics","Health","Sports","Disaster")
+    val types = listOf("Politics", "Health", "Sports", "Disaster")
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(

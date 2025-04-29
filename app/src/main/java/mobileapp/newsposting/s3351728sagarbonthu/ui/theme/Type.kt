@@ -1,4 +1,4 @@
-package com.example.newspostingapp.ui.theme
+package mobileapp.newsposting.s3351728sagarbonthu.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -12,24 +12,31 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/newsposting_ic"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/newsposting_ic"
         android:supportsRtl="true"
         android:theme="@style/Theme.NewsPostingApp"
         tools:targetApi="31">
         <activity
-            android:name=".AllNewsActivity"
+            android:name="mobileapp.newsposting.s3351728sagarbonthu.SupportActivity"
             android:exported="false" />
         <activity
-            android:name=".UpdatePostActivity"
+            android:name="mobileapp.newsposting.s3351728sagarbonthu.WriterProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".SelectLocationActivity"
+            android:name="mobileapp.newsposting.s3351728sagarbonthu.SearchByAreaActivity"
             android:exported="false" />
         <activity
-            android:name=".CreateNewsActivity"
+            android:name="mobileapp.newsposting.s3351728sagarbonthu.AllNewsActivity"
             android:exported="false" />
+        <activity
+            android:name="mobileapp.newsposting.s3351728sagarbonthu.UpdatePostActivity"
+            android:exported="false" />
+        <activity
+            android:name="mobileapp.newsposting.s3351728sagarbonthu.SelectLocationActivity"
+            android:exported="false" />
+
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -42,25 +49,23 @@
         </provider>
 
         <activity
-            android:name=".ManagePostsActivity"
+            android:name="mobileapp.newsposting.s3351728sagarbonthu.ManagePostsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="mobileapp.newsposting.s3351728sagarbonthu.CreatePostActivity"
             android:exported="false" />
         <activity
-            android:name=".PostSummaryActivity"
+            android:name="mobileapp.newsposting.s3351728sagarbonthu.NewsHomeActivity"
             android:exported="false" />
         <activity
-            android:name=".CreatePostActivity"
+            android:name="mobileapp.newsposting.s3351728sagarbonthu.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".NewsHomeActivity"
+            android:name="mobileapp.newsposting.s3351728sagarbonthu.SignInActivity"
             android:exported="false" />
         <activity
-            android:name=".SignUpActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SignInActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
+            android:name="mobileapp.newsposting.s3351728sagarbonthu.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.NewsPostingApp">

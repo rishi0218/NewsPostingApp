@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.newspostingapp"
+    namespace = "mobileapp.newsposting.s3351728sagarbonthu"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.newspostingapp"
+        applicationId = "mobileapp.newsposting.s3351728sagarbonthu"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

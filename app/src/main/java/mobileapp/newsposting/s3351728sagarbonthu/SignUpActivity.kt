@@ -1,4 +1,4 @@
-package com.example.newspostingapp
+package mobileapp.newsposting.s3351728sagarbonthu
 
 import android.app.Activity
 import android.content.Context
@@ -7,19 +7,20 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -40,8 +41,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.database.FirebaseDatabase
 import kotlin.jvm.java
 
@@ -56,11 +55,11 @@ class SignUpActivity : ComponentActivity() {
 
 @Composable
 fun RegisterScreen() {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var fullName by remember { mutableStateOf("") }
-    var qualification by remember { mutableStateOf("") }
+    var posterEmail by remember { mutableStateOf("") }
+    var posterPassword by remember { mutableStateOf("") }
+    var posterConfirmPassword by remember { mutableStateOf("") }
+    var posterFullName by remember { mutableStateOf("") }
+    var posterQualification by remember { mutableStateOf("") }
 
     val context = LocalContext.current as Activity
 
@@ -68,7 +67,8 @@ fun RegisterScreen() {
         modifier = Modifier
             .fillMaxSize()
             .padding(0.dp)
-            .background(Color.Green),
+            .background(Color.Green)
+            .padding(WindowInsets.systemBars.asPaddingValues()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     )
@@ -91,7 +91,7 @@ fun RegisterScreen() {
 
             { // Logo (replace with acorn image resource if you have one)
                 Image(
-                    painter = painterResource(id = R.drawable.news_posting), // Replace with your drawable resource
+                    painter = painterResource(id = R.drawable.newsposting_ic), // Replace with your drawable resource
                     contentDescription = "App Logo",
                     modifier = Modifier
                         .size(64.dp)
@@ -113,8 +113,8 @@ fun RegisterScreen() {
 
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
-                    value = fullName,
-                    onValueChange = { fullName = it },
+                    value = posterFullName,
+                    onValueChange = { posterFullName = it },
                     label = { Text("Full Name") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -125,8 +125,8 @@ fun RegisterScreen() {
 
                 // Email TextField
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
+                    value = posterEmail,
+                    onValueChange = { posterEmail = it },
                     label = { Text("Email Address") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -137,7 +137,7 @@ fun RegisterScreen() {
 
                 // Password TextField
                 OutlinedTextField(
-                    value = qualification, onValueChange = { qualification = it },
+                    value = posterQualification, onValueChange = { posterQualification = it },
                     label = { Text(text = "Qualification") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -146,8 +146,8 @@ fun RegisterScreen() {
                         )
                 )
                 OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
+                    value = posterPassword,
+                    onValueChange = { posterPassword = it },
                     label = { Text("Password") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -156,8 +156,8 @@ fun RegisterScreen() {
 
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
-                    value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
+                    value = posterConfirmPassword,
+                    onValueChange = { posterConfirmPassword = it },
                     label = { Text("Confirm Password") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -170,33 +170,33 @@ fun RegisterScreen() {
                 Button(
                     onClick = {
                         when {
-                        fullName.isEmpty() -> {
-                            Toast.makeText(context, " Please Enter Name", Toast.LENGTH_SHORT).show()
+                        posterFullName.isEmpty() -> {
+                            Toast.makeText(context, "Oops, the name section is empty!", Toast.LENGTH_SHORT).show()
                         }
 
-                        email.isEmpty() -> {
-                            Toast.makeText(context, " Please Enter Mail", Toast.LENGTH_SHORT)
+                        posterEmail.isEmpty() -> {
+                            Toast.makeText(context, "Oops, the email section is empty!", Toast.LENGTH_SHORT)
                                 .show()
                         }
-                        qualification.isEmpty() -> {
-                            Toast.makeText(context, " Please Enter qualification", Toast.LENGTH_SHORT)
+                        posterQualification.isEmpty() -> {
+                            Toast.makeText(context, "Oops, the qualification section is empty!", Toast.LENGTH_SHORT)
                                 .show()
                         }
-                        password.isEmpty() -> {
-                            Toast.makeText(context, " Please Enter Password", Toast.LENGTH_SHORT)
+                        posterPassword.isEmpty() -> {
+                            Toast.makeText(context, "Oops, the password section is empty!", Toast.LENGTH_SHORT)
                                 .show()
                         }
-                        confirmPassword.isEmpty() -> {
-                            Toast.makeText(context, " Please Enter Confirm Password", Toast.LENGTH_SHORT)
+                        posterConfirmPassword.isEmpty() -> {
+                            Toast.makeText(context, "Oops, the confirm password section is empty!", Toast.LENGTH_SHORT)
                                 .show()
                         }
 
                         else -> {
                             val posterDetails = PosterDetails(
-                                fullName,
-                                email,
-                                qualification,
-                                password
+                                posterFullName,
+                                posterEmail,
+                                posterQualification,
+                                posterPassword
                             )
                             registerUser(posterDetails,context);
                         }

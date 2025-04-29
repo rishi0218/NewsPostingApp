@@ -1,4 +1,4 @@
-package com.example.newspostingapp
+package mobileapp.newsposting.s3351728sagarbonthu
 
 import android.app.Activity
 import android.content.Context
@@ -7,19 +7,20 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -40,9 +41,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.database.FirebaseDatabase
 
 class SignInActivity : ComponentActivity() {
@@ -56,8 +54,8 @@ class SignInActivity : ComponentActivity() {
 
 @Composable
 fun NewsPostingLogin() {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var posterEmail by remember { mutableStateOf("") }
+    var posterPassword by remember { mutableStateOf("") }
 
     val context = LocalContext.current as Activity
 
@@ -65,7 +63,7 @@ fun NewsPostingLogin() {
         modifier = Modifier
             .fillMaxSize()
             .padding(0.dp)
-            .background(Color.Green),
+            .background(Color.Green) .padding(WindowInsets.systemBars.asPaddingValues()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     )
@@ -87,7 +85,7 @@ fun NewsPostingLogin() {
             )
             { // Logo (replace with acorn image resource if you have one)
                 Image(
-                    painter = painterResource(id = R.drawable.news_posting), // Replace with your drawable resource
+                    painter = painterResource(id = R.drawable.newsposting_ic), // Replace with your drawable resource
                     contentDescription = "App Logo",
                     modifier = Modifier
                         .size(64.dp)
@@ -113,8 +111,8 @@ fun NewsPostingLogin() {
 
                 // Email TextField
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
+                    value = posterEmail,
+                    onValueChange = { posterEmail = it },
                     label = { Text("Email Address") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -125,7 +123,7 @@ fun NewsPostingLogin() {
 
                 // Password TextField
                 OutlinedTextField(
-                    value = password, onValueChange = { password = it },
+                    value = posterPassword, onValueChange = { posterPassword = it },
                     label = { Text(text = "Password") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -140,21 +138,21 @@ fun NewsPostingLogin() {
                 Button(
                     onClick = {
                         when {
-                        email.isEmpty() -> {
-                            Toast.makeText(context, " Please Enter Mail", Toast.LENGTH_SHORT).show()
+                        posterEmail.isEmpty() -> {
+                            Toast.makeText(context, "Oops, the email section is empty!", Toast.LENGTH_SHORT).show()
                         }
 
-                        password.isEmpty() -> {
-                            Toast.makeText(context, " Please Enter Password", Toast.LENGTH_SHORT)
+                        posterPassword.isEmpty() -> {
+                            Toast.makeText(context, "Oops, the password section is empty!", Toast.LENGTH_SHORT)
                                 .show()
                         }
 
                         else -> {
                             val posterDetails = PosterDetails(
                                 "",
-                                email,
+                                posterEmail,
                                 "",
-                                password
+                                posterPassword
                             )
 
                             loginUser(posterDetails,context)
@@ -207,12 +205,13 @@ fun loginUser(posterDetails: PosterDetails, context: Context) {
             if (newsData != null) {
                 if (newsData.password == posterDetails.password) {
 
-                    NewsPostingData.writeLS(context, true)
-                    NewsPostingData.writeMail(context, newsData.emailid)
-                    NewsPostingData.writeUserName(context, newsData.name)
+                    NewsPostPrefs.markLoginStatus(context, true)
+                    NewsPostPrefs.saveReporterEmail(context, newsData.emailid)
+                    NewsPostPrefs.saveReporterName(context, newsData.name)
 
                     context.startActivity(Intent(context, NewsHomeActivity::class.java))
-                    Toast.makeText(context, "Login Sucessfully", Toast.LENGTH_SHORT).show()
+                    (context as Activity).finish()
+                    Toast.makeText(context, "Login Successfully", Toast.LENGTH_SHORT).show()
 
                 } else {
                     Toast.makeText(context, "Seems Incorrect Credentials", Toast.LENGTH_SHORT).show()

@@ -1,24 +1,31 @@
-package com.example.newspostingapp
+package mobileapp.newsposting.s3351728sagarbonthu
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LinearProgressIndicator
@@ -47,22 +54,23 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class AllNewsActivity : ComponentActivity() {
+class ManagePostsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AllPostsScreen()
+            ManagePostsScreen()
         }
     }
 }
 
 @Composable
-fun AllPostsScreen() {
+fun ManagePostsScreen() {
     val context = LocalContext.current as Activity
-    val userEmail = NewsPostingData.readMail(context)
+    val userEmail = NewsPostPrefs.getReporterEmail(context)
 
     var newsList by remember { mutableStateOf(listOf<NewsData>()) }
     var loadNews by remember { mutableStateOf(true) }
+
 
     LaunchedEffect(userEmail) {
         getNewsDetails(userEmail) { news ->
@@ -71,7 +79,7 @@ fun AllPostsScreen() {
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize() .padding(WindowInsets.systemBars.asPaddingValues())) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -89,7 +97,7 @@ fun AllPostsScreen() {
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "News Feed",
+                text = "Manage Posts",
                 color = Color.White,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
@@ -111,7 +119,23 @@ fun AllPostsScreen() {
                 if (newsList.isNotEmpty()) {
                     LazyColumn {
                         items(newsList) { news ->
-                            AllNewsItem(news)
+                            NewsItem(news,
+                                onDeleteClick = {
+                                    deletePost(news.newsId, userEmail) {
+                                        // Refresh the list after delete
+                                        getNewsDetails(userEmail) { newsList = it }
+                                    }
+                                },
+                                onUpdateClick = {
+                                    context.startActivity(
+                                        Intent(
+                                            context,
+                                            UpdatePostActivity::class.java
+                                        )
+                                    )
+
+                                }
+                            )
                         }
                     }
                 } else {
@@ -123,7 +147,7 @@ fun AllPostsScreen() {
 }
 
 @Composable
-fun AllNewsItem(newsData: NewsData) {
+fun NewsItem(newsData: NewsData, onDeleteClick: () -> Unit, onUpdateClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -144,12 +168,12 @@ fun AllNewsItem(newsData: NewsData) {
 
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = "Title : ${newsData.newsTitle}",
+                    text = "Title: ${newsData.newsTitle}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
                 Text(
-                    text = "Category : ${newsData.newsCategory}",
+                    text = "Category: ${newsData.newsCategory}",
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
@@ -161,31 +185,33 @@ fun AllNewsItem(newsData: NewsData) {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
+                        onClick = {
+                            SelectedNewsArticle.newsData = newsData
+                            onUpdateClick()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.main_color))
+                    ) {
+                        Text(text = "Update", color = Color.White)
+                    }
 
-                    Image(
-                        painter = painterResource(id = R.drawable.iv_author),
-                        contentDescription = "Author",
-                        modifier = Modifier
-                            .size(24.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Text(
-                        text = "${newsData.author}",
-                        fontSize = 14.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold
-                    )
-
+                    Button(
+                        onClick = { onDeleteClick() },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    ) {
+                        Text(text = "Delete", color = Color.White)
+                    }
                 }
             }
         }
     }
 }
 
-fun getAllNewsDetails(userMail: String, callback: (List<NewsData>) -> Unit) {
+fun getNewsDetails(userMail: String, callback: (List<NewsData>) -> Unit) {
 
     val emailKey = userMail.replace(".", ",")
     val databaseReference = FirebaseDatabase.getInstance().getReference("NewsPosts/$emailKey")
@@ -206,3 +232,36 @@ fun getAllNewsDetails(userMail: String, callback: (List<NewsData>) -> Unit) {
         }
     })
 }
+
+fun deletePost(newsId: String, userMail: String, callback: () -> Unit) {
+    val emailKey = userMail.replace(".", ",")
+    val databaseReference = FirebaseDatabase.getInstance().getReference("NewsPosts/$emailKey")
+
+    databaseReference.child(newsId)
+        .removeValue()
+        .addOnSuccessListener {
+            callback()
+        }
+        .addOnFailureListener {
+            Log.e("Firebase", "Delete failed: ${it.message}")
+        }
+}
+
+fun updatePost(newsData: NewsData, userMail: String, callback: () -> Unit) {
+
+    val emailKey = userMail.replace(".", ",")
+    val databaseReference = FirebaseDatabase.getInstance().getReference("NewsPosts/$emailKey")
+
+    databaseReference.child(newsData.newsId)
+        .setValue(newsData)
+        .addOnSuccessListener {
+            callback()
+        }
+        .addOnFailureListener {
+            Log.e("Firebase", "Update failed: ${it.message}")
+        }
+}
+
+
+
+

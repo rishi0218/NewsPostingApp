@@ -1,15 +1,16 @@
 {
   "project_info": {
     "project_number": "585562389547",
+    "firebase_url": "https://newspostingapp-d4b93-default-rtdb.firebaseio.com",
     "project_id": "newspostingapp-d4b93",
     "storage_bucket": "newspostingapp-d4b93.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:585562389547:android:513defce745aa18d05fe6e",
+        "mobilesdk_app_id": "1:585562389547:android:e68b6d656e939bdf05fe6e",
         "android_client_info": {
-          "package_name": "com.example.newspostingapp"
+          "package_name": "mobileapp.newsposting.s3351728sagarbonthu"
         }
       },
       "oauth_client": [],

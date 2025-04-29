@@ -1,6 +1,5 @@
-package com.example.newspostingapp.ui.theme
+package mobileapp.newsposting.s3351728sagarbonthu.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
